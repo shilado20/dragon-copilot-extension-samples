@@ -1,0 +1,17 @@
+name: canary-test-local-ext
+description: mock canary adaptive card data for local QA testing
+version: 0.0.1
+auth:
+  tenantId: 72f988bf-86f1-41af-91ab-2d7cd011db47
+tools:
+  - name: canary-plugin
+    description: Canary vocal analyser
+    endpoint: {INSERT_DEV_TUNNEL_URL_HERE}/v1/process
+    inputs:
+      - name: iterativeAudio
+        description: Iterative audio data from ambient recording
+        data: DSP/IterativeAudio
+    outputs:
+      - name: pluginResult
+        description: Canary health screening output response
+        data: DSP
