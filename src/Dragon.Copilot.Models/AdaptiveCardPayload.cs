@@ -34,4 +34,11 @@ public class AdaptiveCardPayload
     /// </summary>
     [JsonPropertyName("body")]
     public IList<object> Body { get; init; } = new List<object>();
+
+    /// <summary>
+    /// Actions for the adaptive card (e.g., Action.Execute)
+    /// </summary>
+    [JsonPropertyName("actions")]
+    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
+    public IList<object>? Actions { get; init; }
 }

@@ -12,6 +12,12 @@ namespace Dragon.Copilot.Models;
 public class CodeInfo
 {
     /// <summary>
+    /// The code value
+    /// </summary>
+    [JsonPropertyName("code")]
+    public string? Code { get; set; }
+
+    /// <summary>
     /// The code identifier (required)
     /// </summary>
     [JsonPropertyName("identifier")]

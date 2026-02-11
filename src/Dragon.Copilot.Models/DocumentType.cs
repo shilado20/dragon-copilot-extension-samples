@@ -1,6 +1,7 @@
 // Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
 
+using System.Collections.Generic;
 using System.Text.Json.Serialization;
 
 namespace Dragon.Copilot.Models;
@@ -15,4 +16,11 @@ public class DocumentType
     /// </summary>
     [JsonPropertyName("text")]
     public string? Text { get; set; }
+
+    /// <summary>
+    /// Codes associated with the document type
+    /// </summary>
+    [JsonPropertyName("codes")]
+    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
+    public IList<CodeInfo>? Codes { get; init; }
 }

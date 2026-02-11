@@ -1,4 +1,4 @@
-@SampleExtension_Web_HostAddress = http://localhost:5181
+@SampleExtension_Web_HostAddress = https://hzk69tbs-5181.usw2.devtunnels.ms
 
 # Health Check
 GET {{SampleExtension_Web_HostAddress}}/health
@@ -302,5 +302,28 @@ Accept: application/json
                 "content": "1. Right knee pain.\r\nThe patient reports right knee pain for the last 2 months, especially when standing up or sitting down.\r\n\r\nFollow-up\r\nFollow-up"
             }
         ]
+    }
+}
+
+###
+
+# Canary Mock - IterativeAudio Request
+POST {{SampleExtension_Web_HostAddress}}/v1/process
+Content-Type: application/json
+Accept: application/json
+
+{
+    "sessionData": {
+        "correlation_id": "4d41dfd3-55ec-4302-b148-414517772404",
+        "session_start": "2025-06-20T08:57:35.978Z",
+        "environment_id": "2e152f04-9bbd-4969-a3b9-aab4980dbcee"
+    },
+    "iterativeAudio": {
+        "payload_version": "1.1.0",
+        "schema_version": "0.1",
+        "language": "en-US",
+        "encounter": {
+            "correlation_id": "4d41dfd3-55ec-4302-b148-414517772404"
+        }
     }
 }

@@ -43,16 +43,21 @@ public class ProcessingService : IProcessingService
 
             var processResponse = new ProcessResponse();
 
-            // Process Note if present
-            if (payload.Note != null)
+            // Get correlation ID from session data or encounter
+            var canaryCorrelationId = payload.SessionData.CorrelationId 
+                ?? payload.IterativeAudio?.Encounter?.CorrelationId
+                ?? Guid.NewGuid().ToString();
+
+            // Process IterativeAudio - this is what Canary expects (DSP/IterativeAudio)
+            if (payload.IterativeAudio != null)
             {
-                var noteResponse = await ProcessNoteAsync(payload.Note, payload.SessionData, cancellationToken).ConfigureAwait(false);
-
-                processResponse.Payload["sample-entities"] = noteResponse.SampleEntities;
-                processResponse.Payload["adaptive-card"] = noteResponse.SampleEntitiesAdaptiveCard;
+                processResponse.Payload["pluginResult"] = CanaryHealthScreeningService.CreateCanaryScreeningResponse(canaryCorrelationId);
             }
-
-            // TODO: Add processing for other payload types (Transcript, IterativeTranscript, IterativeAudio)
+            // Also support Note for easier testing without audio
+            else if (payload.Note != null)
+            {
+                processResponse.Payload["pluginResult"] = CanaryHealthScreeningService.CreateCanaryScreeningResponse(canaryCorrelationId);
+            }
 
             processResponse.Success = true;
             processResponse.Message = "Payload processed successfully";
