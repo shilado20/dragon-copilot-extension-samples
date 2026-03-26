@@ -51,12 +51,14 @@ public class VisualizationResource : IResource
     /// Available actions for the card
     /// </summary>
     [JsonPropertyName("actions")]
+    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     public IList<VisualizationAction>? Actions { get; init; }
 
     /// <summary>
     /// References to related data sources
     /// </summary>
     [JsonPropertyName("references")]
+    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     public IList<VisualizationReference>? References { get; init; }
 
     /// <summary>

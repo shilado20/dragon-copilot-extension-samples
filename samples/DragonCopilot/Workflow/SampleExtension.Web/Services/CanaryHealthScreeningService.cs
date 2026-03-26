@@ -14,10 +14,14 @@ namespace SampleExtension.Web.Services;
 public static class CanaryHealthScreeningService
 {
     private const string CanaryLogo = "https://csstatic.blob.core.windows.net/assets/dragon_canary_logo.png";
-    private const string CanaryApiUrl = "https://canaryspeech.com/api";
+    private const string CanaryApiUrl = "https://public-api.prod.eus.canaryspeech.com/dragon/nursing/v1/process";
+    private const string CardTitle = "Canary Speech Vocal Biomarker Assessment";
+    private const string AssessmentTitle = "Canary Aggression Risk Assessment";
+    private const string AssessmentDescription = "A Canary Aggression Risk Assessment was administered by analyzing vocal features that correlate with aggression risk in the environment. The result was as follows:";
+    private const string AssessmentResult = "⚠️ Aggression risk: 73/100 (medium)";
 
     /// <summary>
-    /// Creates a mock Canary Health Screening response with both note and timeline cards
+    /// Creates a mock Canary Health Screening response with the note card from the nursing sample
     /// </summary>
     /// <param name="correlationId">The correlation ID for the request</param>
     /// <returns>A DspResponse containing Canary-style visualization resources</returns>
@@ -25,32 +29,11 @@ public static class CanaryHealthScreeningService
     {
         var response = new DspResponse
         {
-            SchemaVersion = "0.1",
-            Document = new Document
-            {
-                Title = "Clinical Analysis Report",
-                Type = new DocumentType
-                {
-                    Text = "Outpatient Note",
-                    Codes = new List<CodeInfo>
-                    {
-                        new()
-                        {
-                            System = "LOINC",
-                            Identifier = "34109-9",
-                            Description = "Note",
-                            SystemUrl = new Uri("http://loinc.org")
-                        }
-                    }
-                }
-            }
+            SchemaVersion = "1.0"
         };
 
-        // Add the note card (detailed version)
+        // Add the note card
         response.Resources?.Add(CreateCanaryNoteCard(correlationId));
-
-        // Add the timeline card (summary version)
-        response.Resources?.Add(CreateCanaryTimelineCard(correlationId));
 
         return response;
     }
@@ -60,113 +43,25 @@ public static class CanaryHealthScreeningService
     /// </summary>
     private static VisualizationResource CreateCanaryNoteCard(string correlationId)
     {
-        var bodyElements = new List<object>
-        {
-            // Behavioral Health Section
-            new
-            {
-                type = "Container",
-                items = new object[]
-                {
-                    new { type = "TextBlock", text = "Canary Behavioral Health Screening", weight = "Bolder", size = "Small", spacing = "Small" },
-                    new
-                    {
-                        type = "FactSet",
-                        spacing = "Small",
-                        facts = new object[]
-                        {
-                            new { title = "•", value = "Additional Screening Recommended" },
-                            new { title = "•", value = "Vocal features indicative of Anxiety - low" },
-                            new { title = "•", value = "Vocal features indicative of Depression - high" }
-                        }
-                    }
-                }
-            },
-            // Cognitive Health Section
-            new
-            {
-                type = "Container",
-                spacing = "Small",
-                items = new object[]
-                {
-                    new { type = "TextBlock", text = "Canary Cognitive Health Screening", weight = "Bolder", size = "Small", spacing = "Small" },
-                    new
-                    {
-                        type = "FactSet",
-                        spacing = "Small",
-                        facts = new object[]
-                        {
-                            new { title = "•", value = "Additional Screening Not Recommended" },
-                            new { title = "•", value = "Vocal features indicative of MCI - MCI not detected" },
-                            new { title = "•", value = "Vocal features indicative of Alzheimer's - No Alzheimer's Detected" }
-                        }
-                    }
-                }
-            },
-            // Disclaimer
-            new
-            {
-                type = "Container",
-                spacing = "Small",
-                items = new object[]
-                {
-                    new
-                    {
-                        type = "TextBlock",
-                        text = "This information includes AI generated content provided by Canary and is intended to assist healthcare providers (HCP) in evaluating the indication of certain conditions. Check for mistakes in all content generated by AI. This is not a diagnosis, treatment or judgment; further medical evaluation is required to make a health determination in all scenarios. The information is not part of a time-critical decision, nor intended to replace or direct the HCP's judgment or clinical reasoning in all scenarios.",
-                        wrap = true,
-                        size = "Small",
-                        spacing = "Small"
-                    }
-                }
-            }
-        };
-
-        var cardActions = new List<object>
-        {
-            new
-            {
-                type = "Action.Execute",
-                id = "updateNoteAction",
-                title = "Update note",
-                verb = "appendToNoteSection",
-                data = new
-                {
-                    dragonAppendContent = GetCopyDataContent()
-                }
-            }
-        };
-
         return new VisualizationResource
         {
-            Id = "canary-speech-screening-001",
+            Id = "canary-note-card",
             Type = "AdaptiveCard",
             Subtype = VisualizationSubtype.Note,
-            CardTitle = "Canary Speech",
+            CardTitle = CardTitle,
             PartnerLogo = CanaryLogo,
             AdaptiveCardPayload = new AdaptiveCardPayload
             {
                 Type = "AdaptiveCard",
-                Version = "1.3",
-                Body = bodyElements,
-                Actions = cardActions
-            },
-            References = new List<VisualizationReference>
-            {
-                new()
-                {
-                    Id = "ref-canary-speech-001",
-                    Type = ReferenceType.Web,
-                    Title = "Canary Speech",
-                    Url = new Uri("https://canaryspeech.com")
-                }
+                Version = "1.5",
+                Body = CreateCardBody()
             },
             PayloadSources = new List<PayloadSource>
             {
                 new()
                 {
-                    Identifier = "canary-speech-screening-20240908",
-                    Description = "Canary Speech AI Health Screening Service",
+                    Identifier = "canary-speech-request-05be9709-2678-5b35-f328-0a0a969fa32b",
+                    Description = "Canary Health Screening Service",
                     Url = new Uri(CanaryApiUrl)
                 }
             },
@@ -174,75 +69,37 @@ public static class CanaryHealthScreeningService
         };
     }
 
-    /// <summary>
-    /// Creates the timeline card for Canary Health Screening (summary version)
-    /// </summary>
-    private static VisualizationResource CreateCanaryTimelineCard(string correlationId)
+    private static List<object> CreateCardBody()
     {
-        // Timeline card uses the same body/actions structure as the note card
-        var bodyElements = new List<object>
+        return new List<object>
         {
-            // Behavioral Health Section
             new
             {
-                type = "Container",
-                items = new object[]
-                {
-                    new { type = "TextBlock", text = "Canary Behavioral Health Screening", weight = "Bolder", size = "Small", spacing = "Small" },
-                    new
-                    {
-                        type = "FactSet",
-                        spacing = "Small",
-                        facts = new object[]
-                        {
-                            new { title = "•", value = "Additional Screening Recommended" },
-                            new { title = "•", value = "Vocal features indicative of Anxiety - low" },
-                            new { title = "•", value = "Vocal features indicative of Depression - high" }
-                        }
-                    }
-                }
+                type = "TextBlock",
+                text = AssessmentTitle,
+                weight = "Bolder",
+                wrap = true
             },
-            // Cognitive Health Section
             new
             {
-                type = "Container",
-                spacing = "Small",
-                items = new object[]
-                {
-                    new { type = "TextBlock", text = "Canary Cognitive Health Screening", weight = "Bolder", size = "Small", spacing = "Small" },
-                    new
-                    {
-                        type = "FactSet",
-                        spacing = "Small",
-                        facts = new object[]
-                        {
-                            new { title = "•", value = "Additional Screening Not Recommended" },
-                            new { title = "•", value = "Vocal features indicative of MCI - MCI not detected" },
-                            new { title = "•", value = "Vocal features indicative of Alzheimer's - No Alzheimer's Detected" }
-                        }
-                    }
-                }
+                type = "TextBlock",
+                text = AssessmentDescription,
+                size = "Small",
+                wrap = true
             },
-            // Disclaimer
             new
             {
-                type = "Container",
-                spacing = "Small",
-                items = new object[]
-                {
-                    new
-                    {
-                        type = "TextBlock",
-                        text = "This information includes AI generated content provided by Canary and is intended to assist healthcare providers (HCP) in evaluating the indication of certain conditions. Check for mistakes in all content generated by AI. This is not a diagnosis, treatment or judgment; further medical evaluation is required to make a health determination in all scenarios. The information is not part of a time-critical decision, nor intended to replace or direct the HCP's judgment or clinical reasoning in all scenarios.",
-                        wrap = true,
-                        size = "Small",
-                        spacing = "Small"
-                    }
-                }
+                type = "TextBlock",
+                text = AssessmentResult,
+                size = "Small",
+                wrap = true
             }
         };
+    }
 
-        var cardActions = new List<object>
+    private static List<object> CreateCardActions()
+    {
+        return new List<object>
         {
             new
             {
@@ -255,55 +112,13 @@ public static class CanaryHealthScreeningService
                     dragonAppendContent = GetCopyDataContent()
                 }
             }
-        };
-
-        return new VisualizationResource
-        {
-            Id = "canary-speech-screening-001",
-            Type = "AdaptiveCard",
-            Subtype = VisualizationSubtype.Timeline,
-            CardTitle = "Canary Speech",
-            PartnerLogo = CanaryLogo,
-            AdaptiveCardPayload = new AdaptiveCardPayload
-            {
-                Type = "AdaptiveCard",
-                Version = "1.3",
-                Body = bodyElements,
-                Actions = cardActions
-            },
-            References = new List<VisualizationReference>
-            {
-                new()
-                {
-                    Id = "ref-canary-speech-001",
-                    Type = ReferenceType.Web,
-                    Title = "Canary Speech",
-                    Url = new Uri("https://canaryspeech.com")
-                }
-            },
-            PayloadSources = new List<PayloadSource>
-            {
-                new()
-                {
-                    Identifier = "canary-speech-screening-20240908",
-                    Description = "Canary Speech AI Health Screening Service",
-                    Url = new Uri(CanaryApiUrl)
-                }
-            },
-            DragonCopilotCopyData = GetCopyDataContent()
         };
     }
 
     private static string GetCopyDataContent()
     {
-        return "Canary Behavioral Health Screening\n" +
-               "• Additional Screening Recommended\n" +
-               "• Vocal features indicative of Anxiety - low\n" +
-               "• Vocal features indicative of Depression - high\n" +
-               "\n" +
-               "Canary Cognitive Health Screening\n" +
-               "• Additional Screening Not Recommended\n" +
-               "• Vocal features indicative of MCI - MCI not detected\n" +
-               "• Vocal features indicative of Alzheimer's - No Alzheimer's Detected";
+        return AssessmentTitle + "\n" +
+               AssessmentDescription + "\n" +
+               "Aggression risk: 73/100 (medium)";
     }
 }
