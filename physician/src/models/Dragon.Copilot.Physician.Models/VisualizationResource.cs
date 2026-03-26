@@ -54,6 +54,7 @@ public class VisualizationResource : IResource
     /// See https://learn.microsoft.com/en-us/industry/healthcare/dragon-copilot/extensions/adaptive-card-spec.
     /// </summary>
     [JsonPropertyName("references")]
+    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     public IList<VisualizationReference>? References { get; init; }
 
     /// <summary>
